@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!--
+       appender 是 console的，也就是说ConsoleAppender会打印到catalina文件上，
+       encoding是utf-8
+       pattern里面是日志的格式，
+       filter 是DEBUG,也就是说级别大于debug的都会显示，
+       这个是为了我们后边在调试的时候，例如mybatis，然后我们会看到真正传入到DB中的SQL语句，
+       因为那些级别都是DEBUG的
+    -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoding>UTF-8</encoding>
+        <!--<encoding>UTF-8</encoding>-->
         <encoder>
             <pattern>[%d{HH:mm:ss.SSS}][%p][%c{40}][%t] %m%n</pattern>
         </encoder>
@@ -9,13 +17,19 @@
             <level>DEBUG</level>
         </filter>
     </appender>
-
+    <!--
+         下面的这个是配置我们项目的日志，我们使用的class是可以自动RollingFileAppender的，
+          自动Rolling我们是通过Rolling进行一个Rolling
+          File 表示它的路径
+          maxHistory 表示最大的历史存储时期
+          encoder 就是我们实际的日志的格式
+     -->
     <appender name="mmall" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!--<File>d:/mmalllog/mmall.log</File>-->
-        <File>/developer/apache-tomcat-7.0.73/logs/mmall.log</File>
+        <File>D:/apache-tomcat-8.5.37-windows-x64/apache-tomcat-8.5.37/logs/mmall.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/developer/apache-tomcat-7.0.73/logs/mmall.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
-            <append>true</append>
+            <fileNamePattern>D:/apache-tomcat-8.5.37-windows-x64/apache-tomcat-8.5.37/logs/mmall.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <!--<append>true</append>-->
             <maxHistory>10</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -23,14 +37,17 @@
         </encoder>
     </appender>
 
-
+    <!--
+            这里的filter是LevelFilter，
+            也就是说当Level是ERROR的时候，我们去接受ACCEPT，当没有匹配上的时候就拒绝DENY
+     -->
     <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!--<File>d:/mmalllog/error.log</File>-->
-        <File>/developer/apache-tomcat-7.0.73/logs/error.log</File>
+        <File>D:/apache-tomcat-8.5.37-windows-x64/apache-tomcat-8.5.37/logs/error.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/devsoft/apache-tomcat-7.0.73/logs/error.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <fileNamePattern>D:/apache-tomcat-8.5.37-windows-x64/apache-tomcat-8.5.37/logs/error.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
             <!--<fileNamePattern>d:/mmalllog/error.log.%d{yyyy-MM-dd}.gz</fileNamePattern>-->
-            <append>true</append>
+            <!--<append>true</append>-->
             <maxHistory>10</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -42,7 +59,10 @@
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
-
+    <!--
+        level配置程INFO级别的
+        additivity="false"表示不让日志向上继承
+     -->
     <logger name="com.mmall" additivity="false" level="INFO" >
         <appender-ref ref="mmall" />
         <appender-ref ref="console"/>
@@ -51,7 +71,9 @@
 
 
     <!-- geelynote mybatis log 日志 -->
-
+    <!--
+         我们将com.mmall.dao设置到DEBUG级别，这样我们dao层sql就可以在日志中查看了
+    -->
     <logger name="com.mmall.dao" level="DEBUG"/>
 
     <!--<logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="DEBUG" >-->
@@ -63,13 +85,15 @@
     <!--</logger>-->
     <!--<logger name="java.sql.Statement" level="DEBUG">-->
         <!--<appender-ref ref="console"/>-->
-    <!--</logger>-->
+    <!--</logger>-4444->
 
-    <!--<logger name="java.sql.PreparedStatement" level="DEBUG">-->
+    <!-<logger name="java.sql.PreparedStatement" level="DEBUG">-->
         <!--<appender-ref ref="console"/>-->
     <!--</logger>-->
 
-
+    <!--
+         将根节点的level设置成DEBUG,依赖是console和error
+     -->
     <root level="DEBUG">
         <appender-ref ref="console"/>
         <appender-ref ref="error"/>
